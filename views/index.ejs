@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <title></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // this triggers the connection event in our server!
+            var socket = io.connect();
+
+            $('#submitbutton').click(function () {
+                $("#newdiv p span").html("");
+                let vals = $("#myform").serializeArray();
+                console.log($("#myform").serializeArray());
+                $("#newdiv p span").append("{");
+                for (let i = 0; i < vals.length; i++) {
+                    $("#newdiv p span").append(vals[i].name + ": ");
+                    $("#newdiv p span").append("'" + vals[i].value + "', ");
+                }
+                $("#newdiv p span").append("}");
+                $("#newdiv").show();
+                socket.emit("button_clicked", { reason: "because I want to learn about sockets!" });
+            });
+            socket.on('server_response', function (data) {
+                $("#newdiv p span").append(" Your lucky number emitted by the server is: " + data.response);
+            });
+        })
+    </script>
+</head>
+
+<body style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <div style="display: none;" id="newdiv">
+        <p>You emitted the following information to the server: <span></span></p>
+    </div>
+    <div style="border: solid black 1px;">
+        <h1 style="text-align: center;">Survey Form</h1>
+        <table>
+            <form action="/process" method="POST" id="myform">
+                <tr>
+                    <td>Your Name: </td>
+                    <td>
+                        <input type="text" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dojo Location</td>
+                    <td>
+                        <select name="location" id="location" style="width: 100%;">
+                            <option value="Washington DC">Washington DC</option>
+                            <option value="Seattle">Seattle</option>
+                            <option value="Dallas">Dallas</option>
+                            <option value="Los Angeles">Los Angeles</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Favorite Language</td>
+                    <td>
+                        <select name="favorite_language" id="favorite_language" style="width: 100%;">
+                            <option value="Javascript">Javascript</option>
+                            <option value="Python">Python</option>
+                            <option value="Java">Java</option>
+                            <option value="FORTH">FORTH</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">Comment (optional):</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea name="comment" id="comment" style="width: 100%;"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" value="Submit" style="float: right;" id="submitbutton">
+                    </td>
+                </tr>
+            </form>
+        </table>
+    </div>
+</body>
+
+</html>
