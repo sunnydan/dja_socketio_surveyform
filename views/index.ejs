@@ -11,9 +11,12 @@
             var socket = io.connect();
 
             $('#submitbutton').click(function () {
+                socket.emit("button_clicked", { formdata: $("#myform").serializeArray() });
+            });
+            socket.on('server_response', function (data) {
                 $("#newdiv p span").html("");
-                let vals = $("#myform").serializeArray();
-                console.log($("#myform").serializeArray());
+                let vals = data.formdata;
+                console.log(data.formdata);
                 $("#newdiv p span").append("{");
                 for (let i = 0; i < vals.length; i++) {
                     $("#newdiv p span").append(vals[i].name + ": ");
@@ -21,9 +24,6 @@
                 }
                 $("#newdiv p span").append("}");
                 $("#newdiv").show();
-                socket.emit("button_clicked", { reason: "because I want to learn about sockets!" });
-            });
-            socket.on('server_response', function (data) {
                 $("#newdiv p span").append(" Your lucky number emitted by the server is: " + data.response);
             });
         })
